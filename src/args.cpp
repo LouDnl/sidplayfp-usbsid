@@ -311,6 +311,12 @@ int ConsolePlayer::args(int argc, const char *argv[])
                 m_offset6581 = std::atoi(&argv[i][2]);
             }
 #endif
+#ifdef FEAT_RESID_NOISE
+            else if (std::strncmp (&argv[i][1], "nl", 2) == 0)
+            {
+                m_noiseLevel = std::atoi(&argv[i][2]);
+            }
+#endif
             else if (argv[i][1] == 'o')
             {   // User forgot track number ?
                 if (argv[i][2] == '\0')
@@ -502,7 +508,25 @@ int ConsolePlayer::args(int argc, const char *argv[])
                 m_combinedWaveformsStrength  = SidConfig::STRONG;
             }
 #endif
-#ifdef FEAT_RESID_CAPS
+#ifdef FEAT_RESID_CAPS_TUNABLE
+            else if (std::strcmp(&argv[i][1], "cpo") == 0)
+            {
+                m_caps6581 = SidConfig::C2200PF;
+            }
+            else if (std::strcmp(&argv[i][1], "cpn") == 0)
+            {
+                m_caps6581 = SidConfig::C470PF;
+            }
+            else if (std::strcmp(&argv[i][1], "cpg") == 0)
+            {
+                m_caps6581 = SidConfig::C330PF;
+            }
+            // for backward compatibility
+            else if (std::strcmp(&argv[i][1], "co") == 0)
+            {
+                m_caps6581 = SidConfig::C2200PF;
+            }
+#elif defined FEAT_RESID_CAPS
             else if (std::strcmp(&argv[i][1], "co") == 0)
             {
                 m_old6581Caps = true;
@@ -874,11 +898,16 @@ void ConsolePlayer::displayArgs(const char *arg)
 #  ifdef FEAT_CW_STRENGTH
         " -cw<w|a|s>   Set the strength of combined waveforms, w(eak), a(verage) or s(trong)\n"
 #  endif
-#  ifdef FEAT_RESID_CAPS
+#  ifdef FEAT_RESID_CAPS_TUNABLE
+        " -cp[o|n|g]   Set caps for 6581, o(ld) 2200pF, n(ew) 470pF, g(alway) 330pF (default new)\n"
+#  elif defined FEAT_RESID_CAPS
         " -co          Set old caps for 6581\n"
 #  endif
 #  ifdef FEAT_RESID_NEW_TUNABLES
         " -of<num>     Set the wave offset for the 6581 model (0.0 to 1.0, default: 0.0)\n"
+#  endif
+#  ifdef FEAT_RESID_NOISE
+        " -nl<num>     Set the background noise level (0 to 8, default: 4)\n"
 #  endif
     );
 #endif

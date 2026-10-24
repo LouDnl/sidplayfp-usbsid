@@ -236,11 +236,11 @@ Set the strength (width) of combined waveforms.
 'w' for weak (thin) waves, 'a' for average waves,
 and 's' for strong (wide) waves.
 
-=item B<-co>
+=item B<-co>I<< <o|n|g> >>
 
-Enable old caps for 6581 model. Use old 2200pF caps mounted
-on ASSY 326298 in place of the standard 470pF caps
-producing a lower cutoff.
+Set the caps for 6581 model. 'o' for old 2200pF caps mounted
+on ASSY 326298 producing a lower cutoff, 'n' for standard 470pF caps
+and 'g' for 'Galway' 330pF caps with higher cutoff.
 
 =item B<-of>I<< <num> >>
 
@@ -248,6 +248,13 @@ If available controls the wave offset for the 6581 model in the ReSIDfp
 emulation.  Affects the volume of digi samples.
 Ranges from 0.0 (faint digis) to 1.0 (loud digis), the default
 value is 0.0.
+
+=item B<-nl>I<< <num> >>
+
+If available controls background noise in the ReSIDfp
+emulation, between 0 (no noise) and 8 (max level).
+If disabled there will be audible quantization noise.
+The default value is 4.
 
 =item B<--noaudio>
 

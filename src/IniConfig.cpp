@@ -179,13 +179,18 @@ void IniConfig::clear()
 #ifdef FEAT_CW_STRENGTH
     emulation_s.combinedWaveformsStrength = SidConfig::AVERAGE;
 #endif
-#ifdef FEAT_RESID_CAPS
+#ifdef FEAT_RESID_CAPS_TUNABLE
+    emulation_s.caps6581     = SidConfig::C470PF;
+#elif defined FEAT_RESID_CAPS
     emulation_s.old6581Caps     = false;
 #endif
 #ifdef FEAT_RESID_NEW_TUNABLES
     emulation_s.leakage = 1.0;
     emulation_s.offset6581 = 1.0;
     emulation_s.dcbRes = 0.0;
+#endif
+#ifdef FEAT_RESID_NOISE
+    emulation_s.noiseLevel = 4;
 #endif
     emulation_s.powerOnDelay = -1;
     emulation_s.samplingMethod = SidConfig::RESAMPLE_INTERPOLATE;
@@ -573,13 +578,35 @@ void IniConfig::readEmulation(iniHandler &ini)
     }
 #endif
 
-#ifdef FEAT_RESID_CAPS
+#ifdef FEAT_RESID_CAPS_TUNABLE
+    {
+        std::string str = readString(ini, "Caps6581");
+        if (!str.empty())
+        {
+            if (str.compare("OLD_CAPS") == 0)
+                emulation_s.caps6581 = SidConfig::C2200PF;
+            else if (str.compare("STANDARD_CAPS") == 0)
+                emulation_s.caps6581 = SidConfig::C470PF;
+            else if (str.compare("GALWAY_CAPS") == 0)
+                emulation_s.caps6581 = SidConfig::C330PF;
+        }
+        else
+        {
+            bool old6581Caps = false;
+            readBool(ini, "Old6581Caps", old6581Caps);
+            emulation_s.caps6581 = old6581Caps ? SidConfig::C2200PF : SidConfig::C470PF;
+        }
+    }
+#elif defined FEAT_RESID_CAPS
     readBool(ini, "Old6581Caps", emulation_s.old6581Caps);
 #endif
 #ifdef FEAT_RESID_NEW_TUNABLES
     readDouble(ini, "DacLeakage", emulation_s.leakage);
     readDouble(ini, "Offset6581", emulation_s.offset6581);
     readDouble(ini, "DCBlockerRes", emulation_s.dcbRes);
+#endif
+#ifdef FEAT_RESID_NOISE
+    readInt(ini, "NoiseLevel", emulation_s.noiseLevel);
 #endif
     readInt(ini, "PowerOnDelay", emulation_s.powerOnDelay);
 

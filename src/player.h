@@ -164,13 +164,18 @@ private:
 #ifdef FEAT_CW_STRENGTH
     SidConfig::sid_cw_t m_combinedWaveformsStrength;
 #endif
-#ifdef FEAT_RESID_CAPS
+#ifdef FEAT_RESID_CAPS_TUNABLE
+    SidConfig::sid_caps_t  m_caps6581;
+#elif defined FEAT_RESID_CAPS
     bool               m_old6581Caps;
 #endif
 #ifdef FEAT_RESID_NEW_TUNABLES
     Setting<double>    m_leakage;
     Setting<double>    m_offset6581;
     Setting<double>    m_dcbRes;
+#endif
+#ifdef FEAT_RESID_NOISE
+    Setting<int>        m_noiseLevel;
 #endif
 #ifdef FEAT_NEW_PLAY_API
     uint_least32_t     m_fadeoutTime;

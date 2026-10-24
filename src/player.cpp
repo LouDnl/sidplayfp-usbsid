@@ -410,13 +410,18 @@ ConsolePlayer::ConsolePlayer (const char * const name) :
 #ifdef FEAT_CW_STRENGTH
         m_combinedWaveformsStrength = emulation.combinedWaveformsStrength;
 #endif
-#ifdef FEAT_RESID_CAPS
+#ifdef FEAT_RESID_CAPS_TUNABLE
+        m_caps6581 = emulation.caps6581;
+#elif defined FEAT_RESID_CAPS
         m_old6581Caps = emulation.old6581Caps;
 #endif
 #ifdef FEAT_RESID_NEW_TUNABLES
         m_leakage = emulation.leakage;
         m_offset6581 = emulation.offset6581;
         m_dcbRes = emulation.dcbRes;
+#endif
+#ifdef FEAT_RESID_NOISE
+        m_noiseLevel = emulation.noiseLevel;
 #endif
 
         if (emulation.powerOnDelay >= 0)
@@ -755,7 +760,9 @@ bool ConsolePlayer::createSidEmu(SIDEMUS emu, const SidTuneInfo *tuneInfo)
                 fmt::print("8580 filter curve: {}\n", fcurve);
             rs->filter8580Curve(fcurve);
 
-#ifdef FEAT_RESID_CAPS
+#ifdef FEAT_RESID_CAPS_TUNABLE
+            rs->set6581caps(m_caps6581);
+#elif defined FEAT_RESID_CAPS
             rs->enableOld6581caps(m_old6581Caps);
 #endif
 #ifdef FEAT_RESID_NEW_TUNABLES
@@ -765,6 +772,10 @@ bool ConsolePlayer::createSidEmu(SIDEMUS emu, const SidTuneInfo *tuneInfo)
                 rs->offset6581(m_offset6581.value());
             if (m_dcbRes.has_value())
                 rs->dcbRes(m_dcbRes.value());
+#endif
+#ifdef FEAT_RESID_NOISE
+            if (m_noiseLevel.has_value())
+                rs->setNoiseLevel(m_noiseLevel.value());
 #endif
         }
         catch (std::bad_alloc const &ba) {}
